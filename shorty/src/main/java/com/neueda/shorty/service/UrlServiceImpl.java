@@ -57,12 +57,6 @@ public class UrlServiceImpl implements UrlService{
         return url;
     }
 
-    @Override
-    public String getCleanLongUrl(Url url) {
-        String longUrl = url.getLongUrl();
-        return longUrl.substring(1,longUrl.length()-1);
-    }
-
     private Long getNextAvailableShortId(){
         Optional<Url> lastImportedUrl = urlRepository.findFirstByOrderByIdDesc();
         Long id = (!lastImportedUrl.isPresent()) ? 1 : 1 + lastImportedUrl.get().getId();

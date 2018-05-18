@@ -30,39 +30,11 @@ public class UrlController {
     @Autowired
     private UrlService urlService;
 
-    @Value("spring.application.host")
+    @Value("${spring.application.host}")
     public String RESOURCE_URI;
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-
-    @RequestMapping(value = "/add", method = RequestMethod.GET)
-    public @ResponseBody String addUrl(@RequestParam(name = "url") String longUrl, HttpServletResponse httpServletResponse) {
-
-        //fixme-allemaos: change the headers from every errors accordingly
-        //fixme-allemaos: change the body from every errors accordingly
-
-        //fixme: check the response from an empty request through "throws URISyntaxException"
-/*
-        {
-            "timestamp": "2018-05-18T00:42:09.121+0000",
-                "status": 404,
-                "error": "Not Found",
-                "message": "No message available",
-                "path": "/shorten/"
-        }
-*/
-
-
-        if(StringUtils.isBlank(longUrl))
-            return ErrorMessage.BAD_REQUEST_EMPTY_URL.getMessage();
-
-        String shortUrl = urlService.addUrl(longUrl);
-        if(shortUrl != null)
-            return RESOURCE_URI +"/"+ shortUrl;
-
-        return ErrorMessage.SERVER_ERROR.getMessage();
-    }
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     public @ResponseBody String postUrl(@RequestBody String longUrl) {
@@ -84,7 +56,7 @@ public class UrlController {
                     HttpStatus.NOT_FOUND);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(new URI(urlService.getCleanLongUrl(url.get())));
+        httpHeaders.setLocation(new URI(url.get().getLongUrl()));
         return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
 
 

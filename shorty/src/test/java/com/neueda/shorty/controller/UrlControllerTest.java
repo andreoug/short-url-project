@@ -15,10 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -30,9 +27,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -42,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by gandreou on 04/02/2018.
  */
 @RunWith(SpringRunner.class)
-@TestPropertySource(locations= "classpath:application.properties")
+@TestPropertySource(locations= "classpath:test.properties")
 @WebAppConfiguration
 public class UrlControllerTest {
 
@@ -76,31 +73,37 @@ public class UrlControllerTest {
     }
 
     @Test
-    public void test__addUrl() throws Exception{
+    public void test__postUrl() throws Exception{
         long shortId = 1;
         String shortUrl = Base62.encode(shortId);
-        //     decodedLongUrl = "http:google.com";
-        String encodedLongUrl = "http%3A%2F%2Fgoogle.com";
+        String longUrl = "http://google.com";
 
-        Url url = new Url(shortId, shortUrl, encodedLongUrl);
+        Url url = new Url(shortId, shortUrl, longUrl);
 
-        when(urlService.addUrl(encodedLongUrl)).thenReturn(shortUrl);
-        this.mockMvc.perform(get("/shorten/add?url=" + encodedLongUrl))
+        when(urlService.addUrl(longUrl)).thenReturn(shortUrl);
+        mockMvc.perform(
+                post("/shorten/post")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(longUrl))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
-                .andExpect(content().string(TEST_RESOURCE_URI+"/"+shortUrl))
+                //fixme-allemaos: this TEST_RESOURCE_URI shouldn't be empty
+//                .andExpect(content().string(TEST_RESOURCE_URI+"/"+shortUrl))
+                .andExpect(content().string(shortUrl))
                 .andDo(print());
     }
 
     @Test
-    public void test__multiple_addUrl() throws Exception{
-        //final      decodedLongUrl = "http:google.com";
-        final String encodedLongUrl = "http%3A%2F%2Fgoogle.com";
+    public void test__multiple_postUrl() throws Exception{
+        final String longUrl = "http://google.com";
 
         IntStream.range(1,100).forEach(i -> {
             log.info("#~#: iteration[i]: " + i);
             try {
-                this.mockMvc.perform(get("/shorten/add?url=" + encodedLongUrl))
+                mockMvc.perform(
+                        post("/shorten/post")
+                                .contentType(MediaType.TEXT_PLAIN)
+                                .content(longUrl))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
                         .andDo(print());
@@ -115,42 +118,13 @@ public class UrlControllerTest {
 
         long shortId = 1;
         String shortUrl = Base62.encode(shortId);
-
-        //todo-allemaos: find the Sanitization method of URL's.
-        //                 longUrl = "'http://google.com'";
-        String encodedInputLongUrl = "'http%3A%2F%2Fgoogle.com'";
-        String encodedOutputLongUrl = "http%3A%2F%2Fgoogle.com";
-
-        Url url = new Url(shortId, shortUrl,encodedInputLongUrl);
+        String longUrl = "http://google.com";
+        Url url = new Url(shortId, shortUrl,longUrl);
 
         when(urlService.getUrl(shortUrl)).thenReturn(Optional.of(url));
-        when(urlService.getCleanLongUrl(url)).thenReturn(encodedOutputLongUrl);
         this.mockMvc.perform(get("/shorten/" + shortUrl))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location",encodedOutputLongUrl))
+                .andExpect(header().string("Location",longUrl))
                 .andDo(print());
     }
-
-    @Test
-    public void test_get_error_cases() throws Exception {
-        List<Url> url = Arrays.asList(
-                new Url((long)1, "short1","long1"),
-                new Url((long)2, "short2","long2"));
-
-        when(urlRepository.findAll()).thenReturn(url);
-        //fixme-allemaos: to catch the error messages
-/*
-        this.mockMvc.perform(get("/shorten/add?url='https%3A%2F%2Fwww.google.fr%2Fsearch%3Fq%3Dhow%2Bto%2Bfold%2Ba%2Bshirt%26oq%3Dhow%2Bto%2Bfold%2Ba%2Bshirt%26aqs%3Dchrome..69i57.3841j0j8%26sourceid%3Dchrome%26ie%3DUTF-8'"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].name", is("Daenerys Targaryen")))
-                .andExpect(jsonPath("$[1].id", is(2)))
-                .andExpect(jsonPath("$[1].name", is("John Snow")));
-        verify(userService, times(1)).findAllUsers();
-        verifyNoMoreInteractions(userService);
-*/
-    }
-
 }

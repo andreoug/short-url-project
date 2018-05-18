@@ -8,5 +8,4 @@ public interface UrlService {
 
     String addUrl(String longUrl);
     Optional<Url> getUrl(String shortUrl);
-    String getCleanLongUrl(Url url);
 }

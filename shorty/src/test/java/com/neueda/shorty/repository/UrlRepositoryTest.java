@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(locations= "classpath:application.properties")
+@TestPropertySource(locations= "classpath:test.properties")
 @WebAppConfiguration
 public class UrlRepositoryTest {
 
