@@ -41,7 +41,7 @@ public class UrlController {
 
         String shortUrl = urlService.addUrl(longUrl);
         if(shortUrl != null)
-            return shortUrl;
+            return RESOURCE_URI + "/" + shortUrl;
 
         return ErrorMessage.BAD_REQUEST_EMPTY_URL.getMessage();
     }

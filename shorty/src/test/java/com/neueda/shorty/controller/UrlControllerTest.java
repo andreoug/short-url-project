@@ -87,9 +87,7 @@ public class UrlControllerTest {
                         .content(longUrl))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain;charset=ISO-8859-1"))
-                //fixme-allemaos: this TEST_RESOURCE_URI shouldn't be empty
-//                .andExpect(content().string(TEST_RESOURCE_URI+"/"+shortUrl))
-                .andExpect(content().string(shortUrl))
+                .andExpect(content().string(TEST_RESOURCE_URI+"/"+shortUrl))
                 .andDo(print());
     }
 
