@@ -17,16 +17,16 @@ import java.util.List;
 public class StatsController {
 
     @RequestMapping("/single")
-    public Stats getStatsByName(@RequestParam(value = "name", defaultValue = "requestsFromGreetingOfStats") String name) {
+    public Stats getStatsByName(@RequestParam(value = "name", defaultValue = "mean_value_of_hits_per_day") String name) {
         return new Stats(1, name, "10");
     }
 
     @RequestMapping("/all")
     public List<?> getAllLog() {
         List<Stats> statsList = new ArrayList<>();
-        statsList.add(new Stats(1, "1", "10"));
-        statsList.add(new Stats(1, "1", "10"));
-        statsList.add(new Stats(1, "1", "10"));
+        statsList.add(new Stats(1, "mean_value_of_hits_per_day", "10"));
+        statsList.add(new Stats(2, "mean_value_of_hits_per_week", "50"));
+        statsList.add(new Stats(3, "mean_value_of_hits_per_month", "188"));
         return statsList;
     }
 }

@@ -1,0 +1,98 @@
+{
+	"info": {
+		"_postman_id": "950ac16b-6ccc-40b8-83b5-a1322123ebcd",
+		"name": "sortUrl",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "postUrl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "https://www.google.fr/search?q=how+to+fold+a+shirt&oq=how+to+fold+a+shirt&aqs=chrome..69i57.3841j0j8&sourceid=chrome&ie=UTF-8"
+				},
+				"url": {
+					"raw": "http://localhost:8080/shorten/post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"shorten",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "redirect2Url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/shorten/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"shorten",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getStats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8081/stats/single",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"stats",
+						"single"
+					]
+				},
+				"description": "add a long url"
+			},
+			"response": []
+		},
+		{
+			"name": "getAllStatistics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8081/stats/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"stats",
+						"all"
+					]
+				},
+				"description": "add a long url"
+			},
+			"response": []
+		}
+	]
+}
