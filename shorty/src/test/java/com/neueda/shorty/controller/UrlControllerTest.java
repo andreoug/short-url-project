@@ -77,12 +77,12 @@ public class UrlControllerTest {
 
     @Test
     public void test__addUrl() throws Exception{
-        int id = 1;
-        String shortUrl = Base62.encode(id);
+        long shortId = 1;
+        String shortUrl = Base62.encode(shortId);
         //     decodedLongUrl = "http:google.com";
         String encodedLongUrl = "http%3A%2F%2Fgoogle.com";
 
-        Url url = new Url(shortUrl,encodedLongUrl);
+        Url url = new Url(shortId, shortUrl, encodedLongUrl);
 
         when(urlService.addUrl(encodedLongUrl)).thenReturn(shortUrl);
         this.mockMvc.perform(get("/shorten/add?url=" + encodedLongUrl))
@@ -113,15 +113,15 @@ public class UrlControllerTest {
     @Test
     public void test_get_longUrl_from_shortUrl() throws Exception {
 
-        int id = 1;
-        String shortUrl = Base62.encode(id);
+        long shortId = 1;
+        String shortUrl = Base62.encode(shortId);
 
         //todo-allemaos: find the Sanitization method of URL's.
         //                 longUrl = "'http://google.com'";
         String encodedInputLongUrl = "'http%3A%2F%2Fgoogle.com'";
         String encodedOutputLongUrl = "http%3A%2F%2Fgoogle.com";
 
-        Url url = new Url(shortUrl,encodedInputLongUrl);
+        Url url = new Url(shortId, shortUrl,encodedInputLongUrl);
 
         when(urlService.getUrl(shortUrl)).thenReturn(Optional.of(url));
         when(urlService.getCleanLongUrl(url)).thenReturn(encodedOutputLongUrl);
@@ -134,8 +134,8 @@ public class UrlControllerTest {
     @Test
     public void test_get_error_cases() throws Exception {
         List<Url> url = Arrays.asList(
-                new Url("short1","long1"),
-                new Url("short2","long2"));
+                new Url((long)1, "short1","long1"),
+                new Url((long)2, "short2","long2"));
 
         when(urlRepository.findAll()).thenReturn(url);
         //fixme-allemaos: to catch the error messages

@@ -35,9 +35,9 @@ public class UrlRepositoryTest {
     public void test_url_repo() throws Exception{
         IntStream.range(1,500).forEach(i -> {
             Optional<Url> lastUrl = repository.findFirstByOrderByIdDesc();
-            int index = (!lastUrl.isPresent()) ? 1 : 1 + lastUrl.get().getId();
-            String shortUrl = Base62.encode(index);
-            Url url = new Url(shortUrl,"sboot");
+            Long shortId = (!lastUrl.isPresent()) ? 1 : 1 + lastUrl.get().getId();
+            String shortUrl = Base62.encode(shortId);
+            Url url = new Url(shortId, shortUrl,"sboot");
             this.entityManager.persist(url);
 
             Optional<Url> u = this.repository.findByShortUrl(shortUrl);

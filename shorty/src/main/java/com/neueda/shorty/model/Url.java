@@ -17,6 +17,9 @@ public class Url {
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
+    @Column(name = "SHORT_ID", nullable = false)
+    @NonNull private Long shortId;
+
     @Column(name = "SHORT_URL", nullable = false)
     @NonNull private String shortUrl;
 

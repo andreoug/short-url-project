@@ -14,6 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import static com.neueda.shorty.util.UrlStatus.DELETED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -29,18 +30,18 @@ public class UrlRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private UrlRepository repository;
+    private UrlRepository urlRepository;
 
     @Test
     public void test_url_repo() throws Exception{
         IntStream.range(1,500).forEach(i -> {
-            Optional<Url> lastUrl = repository.findFirstByOrderByIdDesc();
-            long index = (!lastUrl.isPresent()) ? 1 : 1 + lastUrl.get().getId();
-            String shortUrl = Base62.encode(index);
-            Url url = new Url(shortUrl,"sboot");
+            Optional<Url> lastUrl = urlRepository.findFirstByOrderByIdDesc();
+            long shortId = (!lastUrl.isPresent()) ? 1 : 1 + lastUrl.get().getId();
+            String shortUrl = Base62.encode(shortId);
+            Url url = new Url(shortId, shortUrl,"sboot");
             this.entityManager.persist(url);
 
-            Optional<Url> u = this.repository.findByShortUrl(shortUrl);
+            Optional<Url> u = this.urlRepository.findByShortIdAndStatusNot(shortId, DELETED.getStatus());
             assertThat(u.get().getLongUrl()).isEqualTo("sboot");
             assertThat(u.get().getShortUrl()).isEqualTo(shortUrl);
         });

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.neueda.shorty.util.Base62.decode;
+import static com.neueda.shorty.util.UrlStatus.DELETED;
 
 /**
  * Created by gandreou on 15/05/2018.
@@ -25,25 +26,29 @@ public class UrlServiceImpl implements UrlService{
     @Autowired
     UrlRepository urlRepository;
 
+    private int SHORT_CODE_LENGTH = 7;
+    private int ENCODING_BASE = 62;
+    private long SHORT_ID_UPPER_LIMIT = (long)Math.pow((double)ENCODING_BASE,(double)SHORT_CODE_LENGTH);
+
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public String addUrl(String longUrl) {
-        String shortUrl = getNextAvailableSortUrl();
+        Long shortId = getNextAvailableShortId();
+        String shortUrl = Base62.encode(shortId);
         if(shortUrl != null) {
-            Url u = new Url(shortUrl, longUrl);
+            cleanOldShortedId(shortId);
+            Url u = new Url(shortId, shortUrl, longUrl);
             u.setCreated(new Date());
             urlRepository.save(u);
-            log.info("new url added: " + urlRepository.findById(decode(shortUrl)));
-
+            log.info("new url added (codeLength: " + urlRepository.findByShortIdAndStatusNot(decode(shortUrl), DELETED.getStatus()));
         }
         return shortUrl;
     }
 
     @Override
     public Optional<Url> getUrl(String shortUrl) {
-//        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
-        Optional<Url> url = urlRepository.findById(decode(shortUrl));
+        Optional<Url> url = urlRepository.findByShortIdAndStatusNot(decode(shortUrl), DELETED.getStatus());
         if(url.isPresent()) {
             url.get().setRequested(new Date());
             url.get().setRequests(url.get().getRequests() + 1);
@@ -58,11 +63,23 @@ public class UrlServiceImpl implements UrlService{
         return longUrl.substring(1,longUrl.length()-1);
     }
 
-    private String getNextAvailableSortUrl(){
+    private Long getNextAvailableShortId(){
         Optional<Url> lastImportedUrl = urlRepository.findFirstByOrderByIdDesc();
-        long nextId = (!lastImportedUrl.isPresent()) ? 1 : 1 + lastImportedUrl.get().getId();
-        return Base62.encode(nextId);
+        Long id = (!lastImportedUrl.isPresent()) ? 1 : 1 + lastImportedUrl.get().getId();
+        Long shortId = (id < SHORT_ID_UPPER_LIMIT) ? id : (long)(id%SHORT_ID_UPPER_LIMIT);
+        return  shortId;
+
     }
 
+    private void cleanOldShortedId(Long shortId){
+        if(shortId > SHORT_ID_UPPER_LIMIT) {
+            Optional<Url> optionalUrl = urlRepository.findByShortIdAndStatusNot(shortId, DELETED.getStatus());
+            if (optionalUrl.isPresent()) {
+                Url oldUrl = optionalUrl.get();
+                oldUrl.setStatus(DELETED.getStatus());
+                urlRepository.save(oldUrl);
+            }
+        }
+    }
 
 }

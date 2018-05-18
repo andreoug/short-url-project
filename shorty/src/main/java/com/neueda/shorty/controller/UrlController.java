@@ -30,7 +30,7 @@ public class UrlController {
     @Autowired
     private UrlService urlService;
 
-    @Value("${spring.application.host}")
+    @Value("spring.application.host")
     public String RESOURCE_URI;
 
     protected final Logger log = LoggerFactory.getLogger(getClass());

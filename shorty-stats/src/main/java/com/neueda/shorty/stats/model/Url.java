@@ -11,7 +11,9 @@ import java.util.Date;
 public class Url {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+    private Long id;
+
+    @NonNull private Long shortId;
 
     @NonNull private String shortUrl;
 
@@ -32,6 +34,7 @@ public class Url {
         StringBuilder builder = new StringBuilder();
         builder.append("Url{");
         builder.append("id=" + id);
+        builder.append(" shortId='" + shortId);
         builder.append(" shortUrl='" + shortUrl);
         builder.append(" longUrl='" + longUrl);
         builder.append(", status=" + status);
