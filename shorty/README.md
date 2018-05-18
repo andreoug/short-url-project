@@ -3,7 +3,7 @@ Shorty
 
 Description
 
-A simplistic recipe of a shorten service is that: For any given URL, there is a unique short code that can be saved for any future redirection to the initial URL. In fact, the shortCode is periodically unique. Also when a viral tweet spreads in the social media ecosystem, there are at millions of shortCodes refer to the same URL.
+A simplistic recipe of a shorten service is that: For any given URL, there is a short code that can be saved for any future redirection to the initial URL. In fact, the shortCode can be periodically unique. Also there might be different shortCodes refer to the same URL.
 
 I built the first part of the shorten service with the periodical unique shortCode's which can be used to redirect to the initial long URL address. 
 
