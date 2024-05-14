@@ -4,8 +4,7 @@ import com.neueda.shorty.util.UrlStatus;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Data @RequiredArgsConstructor
